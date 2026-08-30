@@ -313,19 +313,36 @@ export async function PATCH(req: NextRequest) {
     unknown
   >;
   const normalizedWebsiteUrl = normalizeEditableUrl(websiteUrl);
-  if (
-    !isValidAirtableRecordId(programId) ||
-    typeof programName !== "string" ||
-    !programName.trim() ||
-    !isOptionalDate(startDate) ||
-    !isOptionalDate(endDate) ||
-    (typeof startDate === "string" && typeof endDate === "string" && endDate < startDate) ||
-    normalizedWebsiteUrl === undefined
-  ) {
+  if (!isValidAirtableRecordId(programId)) {
     return apiError({
       status: 400,
       code: "bad_request",
-      message: "Invalid program details",
+      message: "Invalid program record ID",
+    });
+  }
+  if (typeof programName !== "string" || !programName.trim()) {
+    return apiError({ status: 400, code: "bad_request", message: "Program name is required" });
+  }
+  if (!isOptionalDate(startDate) || !isOptionalDate(endDate)) {
+    return apiError({
+      status: 400,
+      code: "bad_request",
+      message: "Program dates must use YYYY-MM-DD format",
+    });
+  }
+  if (typeof startDate === "string" && typeof endDate === "string" && endDate < startDate) {
+    return apiError({
+      status: 400,
+      code: "bad_request",
+      message: "Program end date cannot be before its start date",
+      hint: `The submitted start date is ${startDate}, but the end date is ${endDate}. Correct the start date or choose an end date on or after it.`,
+    });
+  }
+  if (normalizedWebsiteUrl === undefined) {
+    return apiError({
+      status: 400,
+      code: "bad_request",
+      message: "Website URL must be a valid HTTP or HTTPS URL",
     });
   }
 

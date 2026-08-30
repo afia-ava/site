@@ -862,6 +862,14 @@ function ProgramEditor({
   const [error, setError] = useState<string | null>(null);
 
   async function save() {
+    if (prog.draft.startDate && prog.draft.endDate && prog.draft.endDate < prog.draft.startDate) {
+      setSaved(false);
+      setError(
+        `The end date (${prog.draft.endDate}) cannot be before the start date (${prog.draft.startDate}). Correct the start date or choose a later end date.`,
+      );
+      return;
+    }
+
     setSaving(true);
     setSaved(false);
     setError(null);
@@ -1016,6 +1024,7 @@ function ProgramEditor({
                   type="date"
                   aria-label="Program start date"
                   value={d.startDate}
+                  max={d.endDate || undefined}
                   onChange={(event) => set({ startDate: event.target.value })}
                   style={{
                     width: "100%",
@@ -1046,6 +1055,7 @@ function ProgramEditor({
                   type="date"
                   aria-label="Program end date"
                   value={d.endDate}
+                  min={d.startDate || undefined}
                   onChange={(event) => set({ endDate: event.target.value })}
                   style={{
                     width: "100%",
