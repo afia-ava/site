@@ -161,6 +161,7 @@ export function renderLlmsTxt({
       `- [Events API (OpenAPI)](${origin}/openapi.json): the public API for Hack Club events, and the shared error shape — also served at ${origin}/api/v1/openapi.json`,
       `- [Events API (YAML)](${origin}/api/openapi.yaml): the same document as YAML — also at ${origin}/api/v1/openapi.yaml`,
       `- [API reference](${origin}/api/v1/docs): browsable documentation for the Events API`,
+      `- [API versioning policy](${origin}/api/versioning): compatibility guarantees, deprecation signals, and removal notice periods`,
       `- [Events RSS feed](${origin}/api/v1/events/rss): newly announced events, newest first`,
       `- [sitemap.xml](${origin}/sitemap.xml): canonical URLs for every locale`,
       `- [Source code](https://github.com/hackclub/site): this website, on GitHub`,

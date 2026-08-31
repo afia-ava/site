@@ -5,6 +5,7 @@ import { SITE_URL } from "@/lib/seo";
 export const V1_BASE_PATH = "/api/v1";
 export const V1_SPEC_PATH = "/api/v1/openapi.json";
 export const V1_DOCS_PATH = "/api/v1/docs";
+export const API_VERSIONING_PATH = "/api/versioning";
 
 /**
  * `revalidateTag` busts Next's data cache but has no reach into the CDN, so
@@ -78,21 +79,27 @@ export function v1Options(): NextResponse {
   });
 }
 
-export const API_DEPRECATED_AT = "2026-09-01T00:00:00Z";
-export const API_SUNSET_AT: string | null = null;
+type DeprecationHeadersInput = {
+  deprecatedAt: string;
+  successorPath?: string;
+  sunsetAt?: string;
+  origin?: string;
+};
 
-//RFC 9745 deprecation
-export function deprecationHeaders(
-  successorPath: string | null,
-  origin: string = SITE_URL,
-): Record<string, string> {
+export function deprecationHeaders({
+  deprecatedAt,
+  successorPath,
+  sunsetAt,
+  origin = SITE_URL,
+}: DeprecationHeadersInput): Record<string, string> {
   const links = [
     ...(successorPath ? [`<${origin}${successorPath}>; rel="successor-version"`] : []),
-    `<${origin}${V1_DOCS_PATH}>; rel="deprecation"; type="text/html"`,
+    `<${origin}${API_VERSIONING_PATH}>; rel="deprecation"; type="text/markdown"`,
   ];
 
   return {
-    Deprecation: `@${Math.floor(new Date(API_DEPRECATED_AT).getTime() / 1000)}`,
+    Deprecation: `@${Math.floor(new Date(deprecatedAt).getTime() / 1000)}`,
+    ...(sunsetAt ? { Sunset: new Date(sunsetAt).toUTCString() } : {}),
     Link: links.join(", "),
   };
 }

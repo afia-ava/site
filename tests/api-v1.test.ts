@@ -2,7 +2,6 @@ import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import {
-  API_SUNSET_AT,
   deprecationHeaders,
   itemEnvelope,
   listEnvelope,
@@ -12,6 +11,7 @@ import {
   v1Headers,
   v1Options,
 } from "@/lib/api-v1";
+import { API_VERSIONING_POLICY } from "@/lib/api-versioning-policy";
 import { PROGRAMS_REVALIDATE_SECONDS } from "@/lib/programs-data";
 import { SCALAR_CUSTOM_CSS, SCALAR_DOCS_HTML, SCALAR_SRC } from "@/lib/scalar";
 
@@ -77,27 +77,47 @@ describe("envelopes", () => {
 });
 
 describe("deprecationHeaders", () => {
-  const headers = deprecationHeaders("/api/v1/events");
+  const headers = deprecationHeaders({
+    deprecatedAt: "2027-01-15T00:00:00Z",
+    successorPath: "/api/v2/events",
+  });
 
   test("uses RFC 9745's structured date, not the old draft's `true`", () => {
     expect(headers.Deprecation).toMatch(/^@\d{10}$/);
     expect(headers.Deprecation).not.toBe("true");
   });
 
-  test("points at the replacement and at the docs", () => {
-    expect(headers.Link).toContain('<https://hackclub.com/api/v1/events>; rel="successor-version"');
-    expect(headers.Link).toContain('<https://hackclub.com/api/v1/docs>; rel="deprecation"');
+  test("points at the replacement and the published policy", () => {
+    expect(headers.Link).toContain('<https://hackclub.com/api/v2/events>; rel="successor-version"');
+    expect(headers.Link).toContain(
+      '<https://hackclub.com/api/versioning>; rel="deprecation"; type="text/markdown"',
+    );
   });
 
-  test("claims no successor when there is not one yet", () => {
-    const orphan = deprecationHeaders(null);
+  test("claims no successor when there is not one", () => {
+    const orphan = deprecationHeaders({ deprecatedAt: "2027-01-15T00:00:00Z" });
     expect(orphan.Link).not.toContain("successor-version");
     expect(orphan.Link).toContain('rel="deprecation"');
   });
 
-  test("sends no Sunset, because no removal date has been agreed", () => {
-    expect(API_SUNSET_AT).toBeNull();
+  test("only sends Sunset after a removal date has been agreed", () => {
     expect(headers).not.toHaveProperty("Sunset");
+    expect(
+      deprecationHeaders({
+        deprecatedAt: "2027-01-15T00:00:00Z",
+        sunsetAt: "2027-05-01T00:00:00Z",
+      }).Sunset,
+    ).toBe("Sat, 01 May 2027 00:00:00 GMT");
+  });
+});
+
+describe("the published versioning policy", () => {
+  test("defines compatibility, notice, and the live deprecation state", () => {
+    expect(API_VERSIONING_POLICY).toContain("requires a new major version");
+    expect(API_VERSIONING_POLICY).toContain("at least 90 days' notice");
+    expect(API_VERSIONING_POLICY).toContain("RFC 9745");
+    expect(API_VERSIONING_POLICY).toContain("RFC 8594");
+    expect(API_VERSIONING_POLICY).toContain("No documented v1 endpoint is currently deprecated");
   });
 });
 

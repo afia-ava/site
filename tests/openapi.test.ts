@@ -42,12 +42,16 @@ describe("OpenAPI document", () => {
     expect(doc.info.version).toMatch(/^\d+\.\d+\.\d+$/);
     expect(doc.servers[0].url).toBe("https://hackclub.com");
     expect(doc.externalDocs.url).toBe("https://hackclub.com/api/v1/docs");
+    expect(doc.info["x-versioning-policy"]).toBe("https://hackclub.com/api/versioning");
+    expect(doc.info.description).toContain("at least 90 days' notice");
+    expect(doc.info.description).toContain("No documented v1 endpoint is currently deprecated");
   });
 
   test("uses the origin it is given", () => {
     const local = buildOpenApiDocument("https://fr.hackclub.com") as AnyRecord;
     expect(local.servers).toHaveLength(1);
     expect(local.servers[0].url).toBe("https://fr.hackclub.com");
+    expect(local.info["x-versioning-policy"]).toBe("https://fr.hackclub.com/api/versioning");
   });
 
   test("declares that endpoints are public unless an operation says otherwise", () => {

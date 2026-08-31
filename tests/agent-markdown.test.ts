@@ -142,8 +142,9 @@ describe("renderLlmsTxt", () => {
     expect(md).not.toContain("## Empty");
   });
 
-  test("documents how to get Markdown", () => {
+  test("documents how to get Markdown and how the API is versioned", () => {
     expect(md).toContain("Accept: text/markdown");
+    expect(md).toContain(`[API versioning policy](${origin}/api/versioning)`);
   });
 });
 
