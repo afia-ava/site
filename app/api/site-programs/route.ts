@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import {
   parseRecord,
   siteBaseUrl,
@@ -10,6 +11,7 @@ import {
 } from "../../../lib/site-programs";
 import { getEditAuth } from "../../../lib/server-auth";
 import { apiError } from "@/lib/api-error";
+import { PROGRAMS_CACHE_TAG } from "@/lib/programs-data";
 
 export const dynamic = "force-dynamic";
 
@@ -269,6 +271,7 @@ export async function POST(req: NextRequest) {
         return apiError({ status: 500, code: "upstream_error", message: "No record returned" });
       savedRecordId = record.id;
       if (body.pinned === true) await unpinOthers(key, allRecords, savedRecordId);
+      revalidateTag(PROGRAMS_CACHE_TAG, { expire: 0 });
       return NextResponse.json(parseRecord(record) as SiteProgram);
     }
   }
@@ -284,7 +287,9 @@ export async function POST(req: NextRequest) {
 
   if (body.pinned === true) await unpinOthers(key, allRecords, savedRecordId);
 
-  return NextResponse.json(parseRecord(await res.json()) as SiteProgram);
+  const savedProgram = parseRecord(await res.json()) as SiteProgram;
+  revalidateTag(PROGRAMS_CACHE_TAG, { expire: 0 });
+  return NextResponse.json(savedProgram);
 }
 
 async function unpinOthers(

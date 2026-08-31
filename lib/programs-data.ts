@@ -4,6 +4,7 @@ import type { AirtableProgram } from "./programs";
 const BASE_ID = "app3A5kJwYqxMLOgh";
 const TABLE_NAME = "YSWS Programs";
 const PROGRAMS_REVALIDATE_SECONDS = 300;
+export const PROGRAMS_CACHE_TAG = "programs";
 
 type FetchProgramsOptions = {
   fresh?: boolean;
@@ -14,7 +15,39 @@ export function hasKey(): boolean {
 }
 
 function createFetchOptions(fresh: boolean): RequestInit {
-  return fresh ? { cache: "no-store" } : { next: { revalidate: PROGRAMS_REVALIDATE_SECONDS } };
+  return fresh
+    ? { cache: "no-store" }
+    : { next: { revalidate: PROGRAMS_REVALIDATE_SECONDS, tags: [PROGRAMS_CACHE_TAG] } };
+}
+
+type AirtableListResponse = {
+  records?: unknown[];
+  offset?: string;
+};
+
+async function fetchAllPages(
+  url: string,
+  headers: Record<string, string>,
+  fetchOptions: RequestInit,
+): Promise<unknown[]> {
+  const records: unknown[] = [];
+  let offset: string | undefined;
+
+  do {
+    const pageUrl = new URL(url);
+    if (offset) pageUrl.searchParams.set("offset", offset);
+
+    const response = await fetch(pageUrl, { ...fetchOptions, headers });
+    if (!response.ok) {
+      throw new Error(`Airtable error ${response.status}: ${await response.text()}`);
+    }
+
+    const page = (await response.json()) as AirtableListResponse;
+    records.push(...(page.records ?? []));
+    offset = page.offset;
+  } while (offset);
+
+  return records;
 }
 
 async function readPrograms({ fresh = false }: FetchProgramsOptions = {}): Promise<
@@ -37,37 +70,29 @@ async function readPrograms({ fresh = false }: FetchProgramsOptions = {}): Promi
   const siteKey = process.env.HACK_CLUB_SITE_AIRTABLE_KEY;
   const fetchOptions = createFetchOptions(fresh);
 
-  const [ywswRes, siteData] = await Promise.all([
-    fetch(`https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}?${params}`, {
-      ...fetchOptions,
-      headers: { Authorization: `Bearer ${apiKey}` },
-    }),
+  const [ywswRecords, siteRecords] = await Promise.all([
+    fetchAllPages(
+      `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}?${params}`,
+      { Authorization: `Bearer ${apiKey}` },
+      fetchOptions,
+    ),
     siteKey
-      ? fetch(
+      ? fetchAllPages(
           `${siteBaseUrl()}?${SITE_FIELDS.map((field) => `fields[]=${encodeURIComponent(field)}`).join("&")}`,
-          {
-            ...fetchOptions,
-            headers: siteAuthHeaders(siteKey),
-          },
-        )
-          .then((response) => (response.ok ? response.json() : { records: [] }))
-          .catch(() => ({ records: [] }))
-      : Promise.resolve({ records: [] }),
+          siteAuthHeaders(siteKey),
+          fetchOptions,
+        ).catch(() => [] as unknown[])
+      : Promise.resolve([]),
   ]);
-
-  if (!ywswRes.ok) {
-    throw new Error(`Airtable error ${ywswRes.status}: ${await ywswRes.text()}`);
-  }
-
-  const ywswData = await ywswRes.json();
   const siteMap = new Map(
-    ((siteData as { records: unknown[] }).records ?? []).map((record) => {
+    siteRecords.map((record) => {
       const parsed = parseRecord(record as Parameters<typeof parseRecord>[0]);
       return [parsed.programName, parsed] as const;
     }),
   );
 
-  return (ywswData.records ?? []).map((record: { id: string; fields: Record<string, string> }) => {
+  return ywswRecords.map((rawRecord) => {
+    const record = rawRecord as { id: string; fields: Record<string, string> };
     const name = record.fields["Name"] ?? "Unnamed";
     const websiteUrl = record.fields["Website URL"]?.trim();
     return {

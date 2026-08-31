@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { siteAuthHeaders } from "../../../../lib/site-programs";
+import { PROGRAMS_CACHE_TAG } from "../../../../lib/programs-data";
 import { getEditAuth, isValidSlackId, isValidAirtableRecordId } from "../../../../lib/server-auth";
 import { apiError } from "@/lib/api-error";
 
@@ -427,5 +429,7 @@ export async function PATCH(req: NextRequest) {
     });
   }
 
-  return NextResponse.json(parseEditableProgram(await updateRes.json()));
+  const updatedProgram = parseEditableProgram(await updateRes.json());
+  revalidateTag(PROGRAMS_CACHE_TAG, { expire: 0 });
+  return NextResponse.json(updatedProgram);
 }

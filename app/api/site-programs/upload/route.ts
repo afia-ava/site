@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import {
   SITE_BASE_ID,
   parseRecord,
@@ -7,6 +8,7 @@ import {
 } from "../../../../lib/site-programs";
 import { canEditProgram } from "../../../../lib/server-auth";
 import { apiError } from "@/lib/api-error";
+import { PROGRAMS_CACHE_TAG } from "@/lib/programs-data";
 
 export const dynamic = "force-dynamic";
 
@@ -161,5 +163,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return NextResponse.json(parseRecord(await fetchRes.json()));
+  const updatedProgram = parseRecord(await fetchRes.json());
+  revalidateTag(PROGRAMS_CACHE_TAG, { expire: 0 });
+  return NextResponse.json(updatedProgram);
 }

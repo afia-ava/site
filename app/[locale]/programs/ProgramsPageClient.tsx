@@ -715,16 +715,14 @@ export default function ProgramsPage({
   }, [clearSortTimers, closeSortPanel]);
 
   useEffect(() => {
-    if (initialPrograms !== null) return;
-
-    fetch("/api/programs")
+    fetch("/api/programs", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) setPrograms(data);
         else setError(data.error ?? t("errorLoad"));
       })
       .catch(() => setError(t("errorNetwork")));
-  }, [initialPrograms, t]);
+  }, [t]);
 
   const filtered = (programs ?? []).filter((p) => {
     if (!hasProgramArtwork(p)) return false;
