@@ -40,48 +40,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Hack Club",
-  url: "https://hackclub.com",
-  logo: "https://assets.hackclub.com/flag-standalone.png",
-  sameAs: [
-    "https://twitter.com/hackclub",
-    "https://github.com/hackclub",
-    "https://www.youtube.com/c/HackClubHQ",
-    "https://www.instagram.com/starthackclub",
-    "https://en.wikipedia.org/wiki/Hack_Club",
-    "https://www.wikidata.org/wiki/Q98127305",
-  ],
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "212 Battery St",
-    addressLocality: "Burlington",
-    addressRegion: "VT",
-    postalCode: "05401",
-    addressCountry: "US",
-  },
-  contactPoint: [
-    {
-      "@type": "ContactPoint",
-      contactType: "customer support",
-      email: "team@hackclub.com",
-      telephone: "+1-855-625-4225",
-      areaServed: "Worldwide",
-      availableLanguage: ["English"],
-    },
-    {
-      "@type": "ContactPoint",
-      contactType: "media relations",
-      email: "christina@hackclub.com",
-      url: "https://hackclub.com/press",
-      areaServed: "Worldwide",
-      availableLanguage: ["English"],
-    },
-  ],
-};
-
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) {
@@ -102,10 +60,6 @@ export default async function LocaleLayout({ children, params }: Props) {
         <script dangerouslySetInnerHTML={{ __html: themesrc }} />
         <link rel="icon" href="/favicon.png" />
         <link rel="shortcut icon" href="/favicon.png" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
       </head>
       <body className="min-h-full">
         <NextIntlClientProvider messages={messages}>
