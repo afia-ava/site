@@ -153,7 +153,10 @@ export async function GET() {
   try {
     const records = await getAllRecords(key);
     return NextResponse.json(records.map(parseRecord), {
-      headers: deprecationHeaders("/api/v1/events"),
+      headers: deprecationHeaders({
+        deprecatedAt: "2026-09-01T00:00:00Z",
+        successorPath: "/api/v1/events",
+      }),
     });
   } catch (e) {
     console.error("[site-programs] GET failed", e);
