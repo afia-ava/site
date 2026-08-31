@@ -295,7 +295,7 @@ export function buildOpenApiDocument(origin: string = SITE_URL): Json {
         "",
         "While the site does serve some other API endpoints, these are deliberately undocumented and should not be built on as they only serve internal purposes. The only public API is under `/api/v1/events`.",
         "",
-        `Versioning and deprecation policy: ${origin}/api/versioning. Breaking changes require a new major URL version. Hack Club normally gives at least 30 days' notice before removing a documented endpoint. No documented v1 endpoint is currently deprecated or scheduled for removal.`,
+        `Versioning and deprecation policy: ${origin}/api/versioning. Breaking changes require a new major URL version. Hack Club normally gives at least 90 days' notice before removing a documented endpoint. No documented v1 endpoint is currently deprecated or scheduled for removal.`,
       ].join("\n"),
       contact: { name: "Hack Club", email: "echo@hackclub.com" },
       "x-versioning-policy": `${origin}/api/versioning`,
