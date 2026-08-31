@@ -13,7 +13,7 @@ import {
   v1Options,
 } from "@/lib/api-v1";
 import { PROGRAMS_REVALIDATE_SECONDS } from "@/lib/programs-data";
-import { SCALAR_DOCS_HTML, SCALAR_SRC } from "@/lib/scalar";
+import { SCALAR_CUSTOM_CSS, SCALAR_DOCS_HTML, SCALAR_SRC } from "@/lib/scalar";
 
 describe("caching", () => {
   test("is public, revalidated at the edge, and never stored by the browser", () => {
@@ -121,6 +121,16 @@ describe("the Scalar docs page", () => {
 
   test("renders the v1 spec", () => {
     expect(SCALAR_DOCS_HTML).toContain("url: '/api/v1/openapi.json'");
+  });
+
+  test("uses the Hack Club brand theme", () => {
+    expect(SCALAR_DOCS_HTML).toContain("theme: 'none'");
+    expect(SCALAR_DOCS_HTML).toContain("withDefaultFonts: false");
+    expect(SCALAR_CUSTOM_CSS).toContain("font-family: 'Phantom Sans'");
+    expect(SCALAR_CUSTOM_CSS).toContain("--scalar-color-accent: #ec3750");
+    expect(SCALAR_CUSTOM_CSS).toContain("--scalar-color-accent: #ff8c37");
+    expect(SCALAR_CUSTOM_CSS).toContain("--scalar-background-3: #fff6eb");
+    expect(SCALAR_CUSTOM_CSS).toContain("--scalar-background-1: #17171d");
   });
 
   test("degrades to plain links when the CDN is unreachable", () => {
