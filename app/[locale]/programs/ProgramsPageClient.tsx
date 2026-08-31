@@ -12,6 +12,7 @@ import type { Event, EventFormat, EventStatus } from "@/lib/events";
 import { hasEventArtwork } from "@/lib/events";
 import { parseLocalDate } from "@/lib/programs";
 import { BtnArrowSvg } from "@/components/landing/btn-arrow";
+import { ProgramCardVisual } from "@/components/programs/ProgramCardVisual";
 
 function useProjectTypeLabel() {
   const t = useTranslations("Programs");
@@ -142,241 +143,31 @@ function ProgramCard({ event }: { event: Event }) {
       }}
       style={{ position: "relative", transition: "transform 0.06s ease", willChange: "transform" }}
     >
-      <div
-        style={{
-          position: "relative",
-          background: bgImageUrl ? "transparent" : bgColor,
-          borderRadius: 16,
-          boxShadow: "2px 4px 6px rgba(0,0,0,0.25)",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          padding: "28px 32px 16px",
-          minHeight: 260,
-          height: "100%",
-          boxSizing: "border-box",
-        }}
-      >
-        {/* Pin icon */}
-        {event.pinned && (
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: 36,
-              height: 36,
-              background: "#ec3750",
-              borderBottomRightRadius: 8,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 2,
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-              <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" />
-            </svg>
-          </div>
-        )}
-
-        {/* Background image */}
-        {bgImageUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={bgImageUrl}
-            alt=""
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              pointerEvents: "none",
-            }}
-          />
-        )}
-
-        {/* Logo or title */}
-        {logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={logoUrl}
-            alt={event.name}
-            style={{
-              height: logoSize,
-              width: "auto",
-              maxWidth: "100%",
-              objectFit: "contain",
-              marginBottom: 12,
-              position: "relative",
-              zIndex: 1,
-              alignSelf: "center",
-            }}
-          />
-        ) : (
-          <h2
-            style={{
-              position: "relative",
-              zIndex: 1,
-              fontFamily: "var(--font-zarathustra)",
-              fontSize: 40,
-              fontWeight: "normal",
-              color: textColor,
-              margin: "0 0 8px",
-              lineHeight: 1,
-              textAlign: "center",
-              width: "100%",
-            }}
-          >
-            {event.name}
-          </h2>
-        )}
-
-        {/* Description */}
-        {description && (
-          <p
-            style={{
-              position: "relative",
-              zIndex: 1,
-              fontFamily: "var(--font-phantom)",
-              fontSize: 20,
-              color: textColor,
-              opacity: 0.9,
-              margin: "0 0 4px",
-              lineHeight: 1.2,
-            }}
-          >
-            {description}
-          </p>
-        )}
-
-        {/* Italic metadata */}
-        {metaLines.length > 0 && (
-          <p
-            style={{
-              position: "relative",
-              zIndex: 1,
-              fontFamily: "var(--font-phantom)",
-              fontStyle: "italic",
-              fontSize: 20,
-              color: textColor,
-              opacity: 0.55,
-              margin: "0 0 4px",
-              lineHeight: 1.2,
-            }}
-          >
-            {metaLines.map((line, i) => (
-              <span key={i}>
-                {line}
-                {i < metaLines.length - 1 && <br />}
-              </span>
-            ))}
-          </p>
-        )}
-
-        {/* Spacer — min 12px, grows to push button toward bottom */}
-        <div style={{ flex: "1 0 12px" }} />
-
-        {/* CTA button */}
-        {event.url && (
-          <a
-            href={event.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="cta-btn"
-            style={{
-              position: "relative",
-              zIndex: 1,
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              paddingTop: 6,
-              paddingBottom: 6,
-              paddingLeft: 20,
-              paddingRight: 20,
-              background: buttonColor,
-              borderRadius: buttonRadius,
-              border: `${buttonBorderWidth}px solid ${buttonBorderColor}`,
-              fontFamily: "var(--font-phantom)",
-              fontWeight: "bold",
-              fontSize: 20,
-              color: buttonTextColor,
-              textDecoration: "none",
-              whiteSpace: "nowrap",
-              marginBottom: slackChannel ? 6 : 0,
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-          >
-            {buttonLabel}
-            <span className="btn-arrow" aria-hidden="true">
-              <BtnArrowSvg />
-            </span>
-          </a>
-        )}
-
-        {/* Slack channel */}
-        {slackChannel && (
-          <p
-            style={{
-              position: "relative",
-              zIndex: 1,
-              fontFamily: "var(--font-phantom)",
-              fontStyle: "italic",
-              fontSize: 16,
-              color: textColor,
-              margin: 0,
-              lineHeight: 1.2,
-              paddingRight: 110,
-            }}
-          >
-            {t("joinDiscussion")}{" "}
-            <a
-              href={slackUrl ?? "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: accentColor,
-                textDecoration: "none",
-                display: "inline-block",
-                whiteSpace: "nowrap",
-              }}
-            >
-              #{slackChannel}
-            </a>
-          </p>
-        )}
-
-        {/* Badge */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            right: 0,
-            height: 36,
-            width: 130,
-            background: badgeEnded ? "var(--surface-hover)" : "var(--red)",
-            borderTopLeftRadius: 8,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "var(--font-phantom)",
-              fontWeight: "bold",
-              fontSize: 16,
-              color: badgeEnded ? "var(--foreground)" : "var(--paper)",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {badgeLabel}
-          </span>
-        </div>
-      </div>
+      <ProgramCardVisual
+        name={event.name}
+        logoUrl={logoUrl}
+        logoSize={logoSize}
+        bgColor={bgColor}
+        bgImageUrl={bgImageUrl}
+        textColor={textColor}
+        accentColor={accentColor}
+        description={description}
+        metaLines={metaLines}
+        buttonLabel={buttonLabel}
+        buttonHref={event.url}
+        buttonColor={buttonColor}
+        buttonTextColor={buttonTextColor}
+        buttonRadius={buttonRadius}
+        buttonBorderWidth={buttonBorderWidth}
+        buttonBorderColor={buttonBorderColor}
+        slackIntro={t("joinDiscussion")}
+        slackChannel={slackChannel}
+        slackUrl={slackUrl}
+        badgeLabel={badgeLabel}
+        badgeMuted={badgeEnded}
+        pinned={event.pinned}
+        interactive
+      />
     </div>
   );
 }
@@ -710,17 +501,20 @@ export default function ProgramsPage({ initialEvents = null }: { initialEvents?:
   }, [clearSortTimers, closeSortPanel]);
 
   useEffect(() => {
-    // No `cache: "no-store"`: the response already carries `max-age=0`, so the
-    // browser revalidates against the edge, and an organiser's save busts the
-    // cache tag behind it immediately.
-    fetch("/api/v1/events")
+    // The server-rendered events depend directly on the tag-invalidated Airtable
+    // cache and are therefore fresher after an editor save than the public API's
+    // CDN response. Never replace them on mount with an API response that may be
+    // inside its stale-while-revalidate window; fetch only for client-only uses.
+    if (initialEvents !== null) return;
+
+    fetch("/api/v1/events", { cache: "no-store" })
       .then((r) => r.json())
       .then((json) => {
         if (Array.isArray(json?.data)) setEvents(json.data);
         else setError(json?.message ?? t("errorLoad"));
       })
       .catch(() => setError(t("errorNetwork")));
-  }, [t]);
+  }, [initialEvents, t]);
 
   const filtered = (events ?? []).filter((p) => {
     if (!hasEventArtwork(p)) return false;

@@ -5,7 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { parseLocalDate } from "@/lib/programs";
 import type { SiteProgram, ProjectType, ProgramFormat } from "@/lib/site-programs";
 import { PROJECT_TYPE_OPTIONS, formatInPersonDate } from "@/lib/site-programs";
-import { BtnArrowSvg } from "@/components/landing/btn-arrow";
+import { ProgramCardVisual } from "@/components/programs/ProgramCardVisual";
 
 interface ManagedProgram {
   id: string;
@@ -110,189 +110,29 @@ function CardPreview({ prog }: { prog: EditorProgram }) {
   if (draft.additionalRequirements) metaLines.push(draft.additionalRequirements);
 
   return (
-    <div
-      style={{
-        position: "relative",
-        background: bgImageUrl ? "transparent" : draft.bgColor,
-        borderRadius: 16,
-        boxShadow: "2px 4px 6px rgba(0,0,0,0.25)",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        padding: "28px 32px 16px",
-        minHeight: 260,
-        boxSizing: "border-box",
-      }}
-    >
-      {bgImageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={bgImageUrl}
-          alt=""
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            pointerEvents: "none",
-          }}
-        />
-      )}
-
-      {logoUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={logoUrl}
-          alt={ysws.name}
-          style={{
-            height: draft.logoSize,
-            width: "auto",
-            maxWidth: "100%",
-            objectFit: "contain",
-            marginBottom: 12,
-            position: "relative",
-            zIndex: 1,
-            alignSelf: "center",
-          }}
-        />
-      ) : (
-        <h2
-          style={{
-            position: "relative",
-            zIndex: 1,
-            fontFamily: "var(--font-zarathustra)",
-            fontSize: "clamp(28px, 3vw, 40px)",
-            fontWeight: "normal",
-            color: draft.textColor,
-            margin: "0 0 8px",
-            lineHeight: 1,
-            textAlign: "center",
-            width: "100%",
-          }}
-        >
-          {ysws.name}
-        </h2>
-      )}
-
-      {draft.description && (
-        <p
-          style={{
-            position: "relative",
-            zIndex: 1,
-            fontFamily: "var(--font-phantom)",
-            fontSize: "clamp(15px, 1.6vw, 20px)",
-            color: draft.textColor,
-            opacity: 0.9,
-            margin: "0 0 4px",
-            lineHeight: 1.2,
-          }}
-        >
-          {draft.description}
-        </p>
-      )}
-
-      {metaLines.length > 0 && (
-        <p
-          style={{
-            position: "relative",
-            zIndex: 1,
-            fontFamily: "var(--font-phantom)",
-            fontStyle: "italic",
-            fontSize: "clamp(15px, 1.6vw, 20px)",
-            color: draft.textColor,
-            opacity: 0.55,
-            margin: "0 0 4px",
-            lineHeight: 1.2,
-          }}
-        >
-          {metaLines.map((line, i) => (
-            <span key={i}>
-              {line}
-              {i < metaLines.length - 1 && <br />}
-            </span>
-          ))}
-        </p>
-      )}
-
-      <div style={{ flex: "1 0 12px" }} />
-
-      {draft.websiteUrl && (
-        <div
-          style={{
-            position: "relative",
-            zIndex: 1,
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            paddingTop: 6,
-            paddingBottom: 6,
-            paddingLeft: 20,
-            paddingRight: 20,
-            background: buttonColor,
-            borderRadius: draft.buttonBorderRadius,
-            border: `${draft.buttonBorderWidth}px solid ${draft.buttonBorderColor || "#17171d"}`,
-            fontFamily: "var(--font-phantom)",
-            fontWeight: "bold",
-            fontSize: "clamp(15px, 1.6vw, 20px)",
-            color: draft.buttonTextColor || "#ffffff",
-            marginBottom: draft.slackChannel ? 6 : 0,
-          }}
-        >
-          {buttonText}
-          <BtnArrowSvg />
-        </div>
-      )}
-
-      {draft.slackChannel && (
-        <p
-          style={{
-            position: "relative",
-            zIndex: 1,
-            fontFamily: "var(--font-phantom)",
-            fontStyle: "italic",
-            fontSize: "clamp(13px, 1.2vw, 16px)",
-            color: draft.textColor,
-            margin: 0,
-            lineHeight: 1.2,
-            paddingRight: 110,
-          }}
-        >
-          Join the discussion in{" "}
-          <span style={{ color: draft.accentColor, display: "inline-block", whiteSpace: "nowrap" }}>
-            #{draft.slackChannel.replace(/^#/, "")}
-          </span>
-        </p>
-      )}
-
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          right: 0,
-          height: 36,
-          width: 130,
-          background: badgeEnded ? "var(--surface-hover)" : "var(--red)",
-          borderTopLeftRadius: 8,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "var(--font-phantom)",
-            fontWeight: "bold",
-            fontSize: "clamp(13px, 1.2vw, 16px)",
-            color: badgeEnded ? "var(--foreground)" : "var(--paper)",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {badgeLabel}
-        </span>
-      </div>
-    </div>
+    <ProgramCardVisual
+      name={ysws.name}
+      logoUrl={logoUrl}
+      logoSize={draft.logoSize}
+      bgColor={draft.bgColor}
+      bgImageUrl={bgImageUrl}
+      textColor={draft.textColor}
+      accentColor={draft.accentColor}
+      description={draft.description || null}
+      metaLines={metaLines}
+      buttonLabel={buttonText}
+      buttonHref={draft.websiteUrl || null}
+      buttonColor={buttonColor}
+      buttonTextColor={draft.buttonTextColor || "#ffffff"}
+      buttonRadius={draft.buttonBorderRadius}
+      buttonBorderWidth={draft.buttonBorderWidth}
+      buttonBorderColor={draft.buttonBorderColor || "#17171d"}
+      slackIntro="Join the discussion in"
+      slackChannel={draft.slackChannel.replace(/^#/, "") || null}
+      badgeLabel={badgeLabel}
+      badgeMuted={badgeEnded}
+      pinned={site?.pinned ?? false}
+    />
   );
 }
 
