@@ -79,15 +79,17 @@ function CardPreview({ prog }: { prog: EditorProgram }) {
   const now = new Date();
   // If no end date, program runs indefinitely (never ends)
   const isEnded = draft.endDate ? parseLocalDate(draft.endDate) < now : false;
-  const isDraft = draft.startDate ? parseLocalDate(draft.startDate) > now : true;
-  const badgeLabel = isDraft
-    ? "Coming soon"
+  const isUpcoming =
+    (draft.startDate ? parseLocalDate(draft.startDate) > now : true) ||
+    (draft.inPersonStart ? parseLocalDate(draft.inPersonStart) > now : false);
+  const badgeLabel = isUpcoming
+    ? "Upcoming"
     : isEnded
       ? "Ended"
       : draft.endDate
         ? `Ends ${parseLocalDate(draft.endDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}`
         : "Ongoing";
-  const badgeEnded = isEnded || isDraft;
+  const badgeEnded = isEnded || isUpcoming;
   const buttonText = isEnded ? "See the site" : "Start now";
   const buttonColor = draft.buttonColor || "#ec3750";
 

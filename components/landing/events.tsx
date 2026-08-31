@@ -31,6 +31,8 @@ function EventCard({ event }: { event: Event }) {
   const tp = useTranslations("Programs");
   const locale = useLocale();
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const now = new Date();
+  const isUpcoming = parseLocalDate(event.startDate) > now;
   // endDate may be null for indefinite programs
   const endDate = event.endDate ? parseLocalDate(event.endDate) : null;
   const theme = event.theme;
@@ -53,7 +55,9 @@ function EventCard({ event }: { event: Event }) {
   const irlStart = event.inPerson?.start ?? null;
   const irlEnd = event.inPerson?.end ?? null;
   let badgeLabel: string;
-  if (irlStart) {
+  if (isUpcoming) {
+    badgeLabel = tp("statusUpcoming");
+  } else if (irlStart) {
     const start = parseLocalDate(irlStart);
     const end = irlEnd ? parseLocalDate(irlEnd) : null;
     const month = start.toLocaleDateString(locale, { month: "short" });

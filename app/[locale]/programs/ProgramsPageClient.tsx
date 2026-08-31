@@ -60,7 +60,9 @@ function ProgramCard({ event }: { event: Event }) {
   const now = new Date();
   // If no end date, program runs indefinitely (never ends)
   const isEnded = event.endDate ? parseLocalDate(event.endDate) < now : false;
-  const isDraft = parseLocalDate(event.startDate) > now;
+  const isUpcoming =
+    parseLocalDate(event.startDate) > now ||
+    (event.inPerson?.start ? parseLocalDate(event.inPerson.start) > now : false);
 
   const theme = event.theme;
   const background = event.background;
@@ -82,8 +84,8 @@ function ProgramCard({ event }: { event: Event }) {
   const format = event.format;
   const description = event.description;
 
-  const badgeLabel = isDraft
-    ? t("comingSoon")
+  const badgeLabel = isUpcoming
+    ? t("statusUpcoming")
     : isEnded
       ? t("statusEnded")
       : event.endDate
@@ -94,7 +96,7 @@ function ProgramCard({ event }: { event: Event }) {
             }),
           })
         : t("statusOngoing");
-  const badgeEnded = isEnded || isDraft;
+  const badgeEnded = isEnded || isUpcoming;
 
   // Italic metadata lines
   const metaLines: string[] = [];
