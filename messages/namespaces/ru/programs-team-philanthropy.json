@@ -22,7 +22,7 @@
     "typeWith": "Тип | {values}",
     "statusOngoing": "Идёт",
     "statusEnded": "Завершена",
-    "statusDraft": "Черновик",
+    "statusUpcoming": "Предстоящая",
     "comingSoon": "Скоро",
     "ends": "До {date}",
     "startNow": "Начать",

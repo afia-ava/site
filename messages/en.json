@@ -948,7 +948,7 @@
     "typeWith": "Type | {values}",
     "statusOngoing": "Ongoing",
     "statusEnded": "Ended",
-    "statusDraft": "Draft",
+    "statusUpcoming": "Upcoming",
     "comingSoon": "Coming soon",
     "ends": "Ends {date}",
     "startNow": "Start now",

@@ -930,7 +930,7 @@
     "typeWith": "Type | {values}",
     "statusOngoing": "En cours",
     "statusEnded": "Terminé",
-    "statusDraft": "Brouillon",
+    "statusUpcoming": "À venir",
     "comingSoon": "Bientôt",
     "ends": "Se termine le {date}",
     "startNow": "Commencer maintenant",

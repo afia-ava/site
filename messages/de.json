@@ -930,7 +930,7 @@
     "typeWith": "Typ | {values}",
     "statusOngoing": "Laufend",
     "statusEnded": "Beendet",
-    "statusDraft": "Entwurf",
+    "statusUpcoming": "Bevorstehend",
     "comingSoon": "Kommt bald",
     "ends": "Endet {date}",
     "startNow": "Jetzt starten",

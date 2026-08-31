@@ -435,7 +435,7 @@ export default function ProgramsPage({ initialEvents = null }: { initialEvents?:
   const STATUS_LABELS: Record<EventStatus, string> = {
     ongoing: t("statusOngoing"),
     ended: t("statusEnded"),
-    upcoming: t("statusDraft"),
+    upcoming: t("statusUpcoming"),
   };
 
   const SORT_LABELS: Record<SortOption, ReactNode> = {
@@ -582,7 +582,7 @@ export default function ProgramsPage({ initialEvents = null }: { initialEvents?:
     statusFilter.size === 0
       ? t("status")
       : t("statusWith", {
-          values: (["ongoing", "ended", "draft"] as EventStatus[])
+          values: (["ongoing", "ended", "upcoming"] as EventStatus[])
             .filter((s) => statusFilter.has(s))
             .map((s) => STATUS_LABELS[s])
             .join(", "),
@@ -884,7 +884,7 @@ export default function ProgramsPage({ initialEvents = null }: { initialEvents?:
             active={statusFilter.size > 0}
             onClear={() => setStatusFilter(new Set())}
           >
-            {(["ongoing", "ended", "draft"] as EventStatus[]).map((s) => (
+            {(["ongoing", "ended", "upcoming"] as EventStatus[]).map((s) => (
               <CheckItem
                 key={s}
                 label={STATUS_LABELS[s]}
