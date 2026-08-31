@@ -87,18 +87,21 @@ async function readTable(table: AirtableTable): Promise<unknown[]> {
 }
 
 /**
- * The cached form: one entry per table, holding the completed record list.
+ * Cache the large, comparatively stable source-program table. The editor's
+ * write path invalidates this tag after changing dates or URLs.
  *
- * Carries the same `programs` tag the editor's write paths already revalidate,
- * so a save still busts this immediately. Every reader — the server render of
- * `/` and `/programs`, and the public events API — shares these two entries, so
- * a warm request makes no Airtable call at all.
+ * Site-program customizations deliberately bypass this cache. They are edited
+ * interactively and must appear on `/programs` immediately; in production we
+ * observed an invalidated `unstable_cache` entry continuing to serve the old
+ * customization while the editor's uncached endpoint already returned the new
+ * record. Each underlying Airtable page is still fetched with `no-store`, so a
+ * read always starts a fresh pagination walk.
  */
-const cachedTable = unstable_cache(readTable, ["airtable-programs"], {
+const cachedYswsTable = unstable_cache(() => readTable("ysws"), ["airtable-programs-ysws"], {
   revalidate: PROGRAMS_REVALIDATE_SECONDS,
   tags: [PROGRAMS_CACHE_TAG],
 });
 
 export function fetchAirtableRecords(table: AirtableTable): Promise<unknown[]> {
-  return cachedTable(table);
+  return table === "site" ? readTable("site") : cachedYswsTable();
 }
