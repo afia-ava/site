@@ -24,6 +24,7 @@ export type ProgramCardVisualProps = {
   badgeMuted: boolean;
   pinned?: boolean;
   interactive?: boolean;
+  fillHeight?: boolean;
 };
 
 export function ProgramCardVisual({
@@ -50,6 +51,7 @@ export function ProgramCardVisual({
   badgeMuted,
   pinned = false,
   interactive = false,
+  fillHeight = true,
 }: ProgramCardVisualProps) {
   const buttonStyle = {
     position: "relative",
@@ -92,7 +94,7 @@ export function ProgramCardVisual({
         alignItems: "flex-start",
         padding: "28px 32px 16px",
         minHeight: 260,
-        height: "100%",
+        height: fillHeight ? "100%" : "auto",
         boxSizing: "border-box",
       }}
     >

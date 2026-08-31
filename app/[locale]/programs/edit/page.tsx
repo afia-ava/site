@@ -132,6 +132,7 @@ function CardPreview({ prog }: { prog: EditorProgram }) {
       badgeLabel={badgeLabel}
       badgeMuted={badgeEnded}
       pinned={site?.pinned ?? false}
+      fillHeight={false}
     />
   );
 }
@@ -1377,7 +1378,7 @@ function ProgramEditor({
       </div>
 
       {/* Right: preview */}
-      <div>
+      <div style={{ alignSelf: "start" }}>
         <div
           style={{
             fontSize: 12,
