@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
+import NextLink from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Navbar } from "@/components/Navbar";
@@ -1209,11 +1210,20 @@ export default function ProgramsPage({ initialEvents = null }: { initialEvents?:
               margin: 0,
             }}
           >
-            {t("footerEditBefore")}{" "}
             <Link href="/programs/edit" style={{ color: "#ec3750", textDecoration: "none" }}>
-              {t("footerEditLink")}
+              Event editor
             </Link>
-            {t("footerEditAfter")}
+            {" · "}
+            <NextLink href="/api/v1/docs" style={{ color: "#ec3750", textDecoration: "none" }}>
+              Events API
+            </NextLink>
+            {" · "}
+            <NextLink
+              href="/api/v1/events/rss"
+              style={{ color: "#ec3750", textDecoration: "none" }}
+            >
+              RSS feed
+            </NextLink>
           </p>
         </div>
       </div>
