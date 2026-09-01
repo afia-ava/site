@@ -57,6 +57,7 @@ const donorTierNames = {
     "Proton Foundation",
     "Kellogg Foundation",
     "Pinkerton Foundation",
+    "Gates Foundation",
   ],
 } as const;
 
